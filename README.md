@@ -41,7 +41,7 @@
 
 # 🌟 News
 
-* **2023.12.14:** 🌟🌟🌟 A simple usage demo for PLAN have been released. More  codes will release when paper publication. 
+* **2023.12.14:**  The code for the PLAN model has been released, with additional code set to be available upon the publication of the paper. The complete demo will be released before January 1, 2024.
 * **2023.11.25:** 🌟🌟🌟 Congratulation! Paper is, in principle, accepted by Communication Earth & Environment.
 * **2023.6.24:** Paper is released at [arxiv](https://arxiv.org/abs/2306.13918), and code will be gradually released.
 * **2023.4.10:** Github Repository Initialization. (copy README template from Meta-Transformer)
