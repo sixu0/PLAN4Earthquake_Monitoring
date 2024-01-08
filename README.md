@@ -32,7 +32,7 @@
 -----------------
 
 [![arXiv](https://img.shields.io/badge/arxiv-2306.13918-b31b1b?style=plastic&color=b31b1b&link=https%3A%2F%2Farxiv.org%2Fabs%2F2306.13918)](https://arxiv.org/abs/2306.13918)
-[![CEE](https://img.shields.io/badge/CEE-s43247-023-01188-4-ced870?style=plastic&color=ced870&link=https%3A%2F%2FCEE%2Fabs%2Fs43247-023-01188-4)](https://www.nature.com/articles/s43247-023-01188-4#citeas)
+[![CEE](https://img.shields.io/badge/CEE-22(2024)-ced870)](https://www.nature.com/articles/s43247-023-01188-4#citeas)
 
 ### 🌟 An all-in-one seismic Phase picking, Location, and Association Network
 
