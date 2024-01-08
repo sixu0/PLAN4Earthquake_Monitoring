@@ -32,6 +32,7 @@
 -----------------
 
 [![arXiv](https://img.shields.io/badge/arxiv-2306.13918-b31b1b?style=plastic&color=b31b1b&link=https%3A%2F%2Farxiv.org%2Fabs%2F2306.13918)](https://arxiv.org/abs/2306.13918)
+[![CEE](https://img.shields.io/badge/CEE-s43247-023-01188-4-ced870?style=plastic&color=ced870&link=https%3A%2F%2FCEE%2Fabs%2Fs43247-023-01188-4)](https://www.nature.com/articles/s43247-023-01188-4#citeas)
 
 ### 🌟 An all-in-one seismic Phase picking, Location, and Association Network
 
@@ -41,7 +42,8 @@
 
 # 🌟 News
 
-* **2023.12.14:**  The code for the PLAN model has been released, with additional code set to be available upon the publication of the paper. The complete demo will be released before January 1, 2024.
+* **2024.1.6:**  The paper has been published on Communication Earth & Environment [Links](https://doi.org/10.1038/s43247-023-01188-4). The code will be released before January 31, 2024.
+* **2023.12.4:**  The code for the PLAN model has been released, with additional code set to be available upon the publication of the paper. 
 * **2023.11.25:** 🌟🌟🌟 Congratulation! Paper is, in principle, accepted by Communication Earth & Environment.
 * **2023.6.24:** Paper is released at [arxiv](https://arxiv.org/abs/2306.13918), and code will be gradually released.
 * **2023.4.10:** Github Repository Initialization. (copy README template from Meta-Transformer)
