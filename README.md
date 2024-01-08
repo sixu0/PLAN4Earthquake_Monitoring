@@ -53,11 +53,16 @@
 # Citation
 If the code and paper help your research, please kindly cite:
 ```
-@article{si2023multi,
-  title={Multi-task multi-station earthquake monitoring: An all-in-one seismic Phase picking, Location, and Association Network (PLAN)},
-  author={Si, Xu and Wu, Xinming and Li, Zefeng and Wang, Shenghou and Zhu, Jun},
-  journal={arXiv preprint arXiv:2306.13918},
-  year={2023}
+@article{Si2024PLAN,
+  title={An all-in-one seismic phase picking, location, and association network for multi-task multi-station earthquake monitoring},
+  author={Si, Xu and Wu, Xinming and Li, Zefeng and Wang, Shenghou and Zhu, Jun},,
+  journal={Communications Earth \& Environment},
+  volume={5},
+  number={1},
+  pages={22},
+  year={2023},
+  publisher={Nature Publishing Group UK London},
+  doi = {10.1038/s43247-023-01188-4},
 }
 ```
 # License
