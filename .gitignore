@@ -10,7 +10,7 @@ __pycache__/
 data/1h/
 data/HN1h/
 data/hn5day/*.sac
-*.pt
+model/*.pt
 ridgecrest_workflow.ipynb
 
 # Distribution / packaging

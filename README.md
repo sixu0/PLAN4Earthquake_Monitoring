@@ -53,13 +53,13 @@
 
 # How to Use
 
-#### 1. Via Anaconda (recommended):
+##### 1. Via Anaconda (recommended):
     conda env create -f env.yaml
     conda activate PLAN
 
-#### 2. Download Weights ([Google Drive](https://drive.google.com/file/d/1OX1IE6Oh5AsOSXjdlAShVzWK0u3bGV9G/view)) file and put it 'Model' dir.
-#### 3. Download sac file and put it 'Data' dir. You can download it through [STP](https://scedc.caltech.edu/data/waveform.html) or [Google Drive](https://drive.google.com/file/d/1EOZiOYFvmHW3SkyLwI5ia9r4LunU7DNx/view).
-#### 4. Open Tutorial_PLAN.ipynb in Notebook dir.
+##### 2. Download Weights ([Google Drive](https://drive.google.com/file/d/1OX1IE6Oh5AsOSXjdlAShVzWK0u3bGV9G/view)) file and put it 'model' dir.
+##### 3. Download sac file and put it 'data/hn5day/' dir. You can download it through [STP](https://scedc.caltech.edu/data/waveform.html) or [Google Drive](https://drive.google.com/file/d/1EOZiOYFvmHW3SkyLwI5ia9r4LunU7DNx/view).
+##### 4. Open Tutorial_PLAN.ipynb in Notebook dir.
 
 &ensp;
 # Citation
