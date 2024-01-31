@@ -7,8 +7,11 @@ __pycache__/
 *.so
 
 #data
-data/
+data/1h/
+data/HN1h/
+data/hn5day/*.sac
 *.pt
+ridgecrest_workflow.ipynb
 
 # Distribution / packaging
 .Python
