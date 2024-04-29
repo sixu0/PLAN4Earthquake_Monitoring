@@ -14,6 +14,7 @@ from geopy.distance import geodesic
 class PLAN_Dataset_train(gdata.Dataset):
     def __init__(self,filename,edgefilepath,inputpath,ifrandom = False):
         gdata.Dataset.__init__(self)
+        # Need to check filename,edgefilepath and inputpath
         self.filename = filename
         self.edgefilepath = edgefilepath
         self.inputpath = inputpath
@@ -22,7 +23,7 @@ class PLAN_Dataset_train(gdata.Dataset):
     def __getitem__(self, index):
         datafile = self.inputpath + 'data/' + self.filename[index]
         data = np.load(datafile)[:,:,0:3072]
-                        
+        # Whether add augmentation 
         for i in range(3):
             if (self.ifrandom == True):
                 data[:,i,:] = self.Z_ScoreNormalization_and_noise(data[:,i,:])
@@ -33,6 +34,8 @@ class PLAN_Dataset_train(gdata.Dataset):
         
         splitlabel = np.abs(np.load(labelfile)[:,:,0:3072])
         splitlabel = torch.tensor(splitlabel,dtype = torch.float)
+        # When process dataset, all of station (some without picking label) is prepared.
+        # During training, we only use data both have P-wave and S-wave label.
         d_time = torch.argmax(splitlabel,dim =-1)
         mask = torch.clamp(d_time,0,1)
         train_mask = torch.zeros([16,2])
@@ -40,12 +43,16 @@ class PLAN_Dataset_train(gdata.Dataset):
             if ((mask[i,0] == 1) and (mask[i,1] == 1)):
                 train_mask[i,0] = 1
                 train_mask[i,1] = 1
-        
+        # Here the mask is which station has label and would be used in training.
         data_mask = train_mask[:,0]
         data_mask = data_mask == 1
-        
+        # Use Gauss type label.
         splitlabel = self.gauss_filer(splitlabel,40,10)[:,:,0:3072]/10
-
+        # Calculate offset of each stations.
+        # st_dis: offset of each stations.
+        # station_loc: norm stations' positions.
+        # In ridgecrest, offset of all stations about event is less than 100, therefore, we used 100 to norm it.
+        # After norm, the offset in Ridgecrest of stations is from 0-80 km to 0-0.8, the depth of event is from 0-50km to 0-0.5.
         st_dis,station_loc = self.cal_distance(index)
         st_dis = torch.tensor(st_dis, dtype=torch.float).reshape(1,17)/100
         station_loc = torch.tensor(station_loc, dtype=torch.float)
@@ -58,6 +65,8 @@ class PLAN_Dataset_train(gdata.Dataset):
         st_dep_new = st_dis[:,16]
         station_loc = station_loc[data_mask]
         d_time = d_time[data_mask]
+        # Because the number of stations used in each data is different, here we provided a function to calculate edge_index.
+        # You can also define it by yourself.
         edge = self.cal_edge(data.shape[0]).T
         edge_index = torch.tensor(edge, dtype=torch.long)
         return gdata.Data(x = data,edge_index = edge_index, y = splitlabel, mask = mask, train_mask = train_mask,data_mask = data_mask,st_dis = st_dis_new,st_dep = st_dep_new,station_loc = station_loc, d_time = d_time,
@@ -127,13 +136,15 @@ class PLAN_Dataset_train(gdata.Dataset):
         return result.squeeze()
 
     def cal_distance(self,index):
-
+        # Here we calculate the offset of each station based on pandas, you can define your own function about it.
         station_pandas = pd.read_csv("./data/gmap-stations.txt", sep='|')
         station_pandas = station_pandas.drop([0])
         station_pandas.columns = ['Network', 'Station', 'Latitude','Longitude', 'Elevation', 'Sitename','StartTime', 'EndTime']
         station_pandas['dis'] = 0
-
+        # For input station position, must norm it based on specific region.
+        # You can norm it based on station position (Ridgecrest) or specific Latitude and Longtitude (Japan).
         station_loc = np.array(station_pandas.iloc[:,2:5])
+        # Japan 30-45 E, 130-150 N.
         Latitude_MAX = station_loc[:,0].max()
         Latitude_MIN = station_loc[:,0].min()
         Longtitude_MAX = station_loc[:,1].max()
@@ -142,11 +153,10 @@ class PLAN_Dataset_train(gdata.Dataset):
         station_loc[:,0] = (station_loc[:,0]- Latitude_MIN)/(Latitude_MAX - Latitude_MIN)
         station_loc[:,1] = (station_loc[:,1]- Longtitude_MIN)/(Longtitude_MAX - Longtitude_MIN)
         station_loc[:,2] = (station_loc[:,2])/Elevation_MAX 
+        # Here is the event location file.
         phasename = './data/train_sample/location/' + \
             str(self.filename[index][0:8]) + '.txt'
-        
         try:
-    # 不能确定正确执行的代码
             f = pd.read_csv(phasename, sep='\\s+',header=None)
         except:
             return np.zeros(17),station_loc
@@ -155,6 +165,7 @@ class PLAN_Dataset_train(gdata.Dataset):
         source_lat = f[4].values
         source_lon = f[5].values
         depth = f[6].values
+        # Calculate offset based on geodesic.
         for i in range(len(station_pandas)):
             station_pandas.iloc[i,8] = geodesic((station_pandas.iloc[i,2], station_pandas.iloc[i,3]), (source_lat, source_lon)).km
         temp = np.concatenate([np.array(station_pandas['dis']),depth])

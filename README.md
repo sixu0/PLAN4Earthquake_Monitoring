@@ -44,18 +44,21 @@
 
 
 # 🌟 News
-* **2024.1.31:**  The Jupyter tutorial and model weights were released. The code for training, along with a more comprehensive and detailed tutorial, will be gradually released. 
-* **2024.1.6:**  The paper has been published on Communication Earth & Environment [Links](https://doi.org/10.1038/s43247-023-01188-4). The code will be released before January 31, 2024.
-* **2023.11.25:** 🌟🌟🌟 Congratulation! Paper is, in principle, accepted by Communication Earth & Environment.
+* **2024.4.28:**  The code for training were released. More comprehensive and detailed tutorial, will be gradually released. 
+* **2024.1.31:**  The Jupyter tutorial and model weights were released. 
+* **2024.1.6:**  🌟🌟🌟 Congratulation! The paper has been published on Communication Earth & Environment [Links](https://doi.org/10.1038/s43247-023-01188-4). The code will be released before January 31, 2024.
 * **2023.6.24:** Paper is released at [arxiv](https://arxiv.org/abs/2306.13918), and code will be gradually released.
 * **2023.4.10:** Github Repository Initialization. (copy README template from Meta-Transformer)
 
 
 # How to Use
 
-##### 1. Via Anaconda (recommended):
+##### 1. Via Anaconda or pip (recommended):
     conda env create -f env.yaml
     conda activate PLAN
+    
+    
+##### PS:Some lib is needed (Torch,PyG,Numpy,Pandas,Geodesic.)
 
 ##### 2. Download Weights ([Google Drive](https://drive.google.com/file/d/1OX1IE6Oh5AsOSXjdlAShVzWK0u3bGV9G/view)) file and put it 'model' dir.
 ##### 3. Download sac file and put it 'data/hn5day/' dir. You can download it through [STP](https://scedc.caltech.edu/data/waveform.html) or [Google Drive](https://drive.google.com/file/d/1EOZiOYFvmHW3SkyLwI5ia9r4LunU7DNx/view).

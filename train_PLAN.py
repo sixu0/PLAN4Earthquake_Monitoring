@@ -55,13 +55,14 @@ def read_args():
     parser.add_argument("--save_model_path",default='./model_path/model_weight_PLAN', help="Save_model_path")
     parser.add_argument("--save_model_name", default = 'model_', help="Save_model_name")
     parser.add_argument("--cuda",default='cpu', help="if use gpu")
+    parser.add_argument("--finetune", type=bool, default=False, help="if use pretrained model")
 
     args = parser.parse_args(args=[])
 
     return args
 
 
-
+# This loss is define to calculate the picking loss.
 class val_loss(nn.Module):
     def __init__(self):
         super().__init__()
@@ -79,7 +80,8 @@ class val_loss(nn.Module):
         
         return ploss, sloss
 
-
+# This loss is define to calculate the phase association loss.
+# It need norm based on signal length ().
 class dtime_loss(nn.Module):
     def __init__(self,ptime,stime):
         super().__init__()
@@ -103,28 +105,37 @@ def main(args):
     
     print(args.board_path)
     print(args.layer_name)
-    #load data
+    # if not exist save model weights path, create it.
     if not os.path.exists(args.save_model_path):
         os.mkdir(args.save_model_path)
+    # load data 
+    # For graph neural network, we need define edge index of different node. 
+    # Here, for ridgecrest region, we connect each station with others.
     edgefilepath = './data/edge_index.npy'
+    # The path and filename of input_data (waveform and label). The example of data can be found in below path. 
     filename = os.listdir('./data/train_sample/data')
-    print(filename)
     inputpath = './data/train_sample/'
-    
+    trainfilename = filename[0:2]
+    testfilename = filename[2:4]
+    # if use tensorboard
     writer = SummaryWriter(args.board_path)
     # load model
     device = torch.device(args.cuda)
     model = Main_GCNN(args.layer_name).to(device)
     torch.cuda.empty_cache()
-
-    load_model_name = './model/model_PLAN_Ridge_continue.pt'
-    model = load_model(load_model_name, model)
+    # if finetune, use the pretrained weights
+    if args.finetune == True:
+        load_model_name = './model/model_PLAN_Ridge_continue.pt'
+        model = load_model(load_model_name, model)
     
     lr_list = []
     print('learning rate = {}'.format(args.LR))
     optimizer = torch.optim.Adam(model.parameters(), lr=args.LR)
+    # use tool to change learning rate, based on exprience, you can change it after 100,000/200,000 iterations.
     scheduler = lr_scheduler.StepLR(optimizer,step_size=50,gamma = 0.9)
+
     epoch_total = args.epochs
+    # Only useful in tensorboard.
     loss_total = np.zeros(epoch_total)
     loss_total_test = np.zeros(epoch_total)
     loc_loss_total = np.zeros(epoch_total)
@@ -143,18 +154,19 @@ def main(args):
     
     
     print('Finished data and model praparing , Begin Training!')
-    start = time.time()      
+    start = time.time()
+    # define several type of loss      
     criterion = val_loss()
     criterion_depth = nn.MSELoss(reduction='sum').cuda()
     criterion_loc = nn.MSELoss(reduction='sum').cuda()
     criterion_dtime = dtime_loss(args.p_std_time,args.s_std_time)
     print('Finished data praparing')
-    trainfilename = filename[0:2]
-    testfilename = filename[2:4]
+
+    # during each epoch
     for epoch in range(epoch_total):
-        
         model.train()
         loss_all = 0
+        # Evaluation picking accuracy by different threshold
         acc_p_train_10 = 0
         acc_s_train_10 = 0
         acc_p_train_20 = 0
@@ -177,22 +189,19 @@ def main(args):
         acc_s_test_50 = 0
         
         
-        
-        
-        
+        # Here, you can use two type of dataloader construct method. 
+        # This model is trained little slowly, if you have a huge dataset (>20,000 or large),
+        # you can sample some data during each epochs. For example:
         # trainfilename_part = random.sample(trainfilename, 64*32)
-        # testfilename = filename[60000:60000+32]
-        # trainfilename_part = random.sample(trainfilename, 32)        
-        # trainfilename_part = filename[0:32]                   
-        # testfilename = filename[50:82]
-        # inputdata_dataset = MyGNNDataset_npy_noise(trainfilename,edgefilepath,inputpath)
-
+        # inputdata_dataset = PLAN_Dataset_train(trainfilename_part,edgefilepath,inputpath)
+        # if you have a small dataset, you can use all of data during each epoch.
         inputdata_dataset = PLAN_Dataset_train(trainfilename, edgefilepath, inputpath)
         test_dataset = PLAN_Dataset_train(testfilename,edgefilepath,inputpath)
         train_loader = gdata.DataLoader(inputdata_dataset, shuffle = True, batch_size=args.batch_size,num_workers = 0)
         test_loader = gdata.DataLoader(
             test_dataset, shuffle=False, batch_size=args.batch_size, num_workers=0)
 
+        # you can check the number of data used in each epoch.
         print(inputdata_dataset)
         print(test_dataset)
         
@@ -214,15 +223,22 @@ def main(args):
         
         torch.cuda.empty_cache()
         
-        
-        
+        # during training
         for mydata in train_loader:
-            
+            # By using PLAN_Dataset_train (based on pyg) you can get set of dataset.
             mydata = mydata.to(device)
             optimizer.zero_grad()
+            # outputgraph_p: pred p-wave picking result.
+            # outputgraph_s: pred p-wave picking result.
+            # pred_loc: pred offset of each station.
+            # pred_depth: pred event depth.
+            # dtp: pred p-wave shift vector.
+            # dts: pred s-wave shift vector.
+            # In iteration, model needs data,station_loc,batch and edge_index (useful for gnn).
             outputgraph_p, outputgraph_s, pred_loc, pred_depth, dtp, dts,_ = model(
                 mydata.x, mydata.station_loc, mydata.batch, mydata.edge_index)
-            outputgraph = torch.stack([outputgraph_p.squeeze(),outputgraph_s.squeeze()],dim = 1)      
+            outputgraph = torch.stack([outputgraph_p.squeeze(),outputgraph_s.squeeze()],dim = 1) 
+            # calcuate three loss: picking, association and location (loc/offset and depth).   
             ploss,sloss = criterion(outputgraph, mydata.y,mydata.train_mask)
             dtp_loss,dts_loss = criterion_dtime(mydata.d_time,dtp,dts,mydata.train_mask)
             loc_loss = criterion_loc(pred_loc.squeeze(),mydata.st_dis)
@@ -233,6 +249,7 @@ def main(args):
             loss_all += total_loss.item()
             optimizer.step()
             
+            # evaluation picking acc of different threshold (useful in tensorboard)
             accp,accs = acc(mydata.y,outputgraph,10)
             acc_p_train_10 += accp
             acc_s_train_10 += accs
@@ -264,6 +281,7 @@ def main(args):
         model.eval()
         loss_all_test = 0
 
+        # test_loader is same as train_loader
         for data in test_loader:
             with torch.no_grad():
                 data = data.to(device)
@@ -274,6 +292,7 @@ def main(args):
                 ploss_test,sloss_test = criterion(outputgraph, data.y,data.train_mask)
                 dtp_loss_test,dts_loss_test = criterion_dtime(data.d_time,dtp,dts,data.train_mask)
                 loc_loss_test = criterion_loc(pred_loc.squeeze(),data.st_dis)
+                # some data depth is absent, skip it.
                 if pred_depth.squeeze().shape == data.st_dep.shape:
                     depth_loss_test = criterion_depth(pred_depth.squeeze(),data.st_dep)
                 else:
@@ -308,6 +327,7 @@ def main(args):
             
 
         scheduler.step()
+        # from here to Final writer.add_scalars is used in Tensorboard, you can delete it.
         loss_total[epoch] = loss_all/trainbt
         loss_total_test[epoch] =  loss_all_test/testbt
         loc_loss_total[epoch] = loc_epoch/trainbt
@@ -429,6 +449,7 @@ def main(args):
         if epoch%1==0:
             print('Epoch: {:04d}, Acc_p_train: {:.5f} , Acc_p_test: {:.5f},Acc_s_train: {:.5f} , Acc_s_test: {:.5f}, Time:{:.6f}, lr:{:.10f}'.
                   format(epoch, acc_p_train_20, acc_p_test_20, acc_s_train_20, acc_s_test_20, end-start, lr_list[epoch]))
+        # save model
         if epoch%(args.save_model_interval)==0:
             save_model_name = args.save_model_name + str(epoch) + '.pt'
             save_model(args.save_model_path,save_model_name,model,optimizer,epoch)
@@ -462,10 +483,6 @@ def acc(label,predictions,threshold):
     pnumber = (len(label)-sum(abs_p == 10000))
     return accp,accs    
     
-
-                        
-                        
-                        
 
 if __name__ == '__main__':
     args = read_args()
