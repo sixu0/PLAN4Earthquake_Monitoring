@@ -105,9 +105,10 @@ def main(args):
     
     print(args.board_path)
     print(args.layer_name)
+    print(args.save_model_path)
     # if not exist save model weights path, create it.
     if not os.path.exists(args.save_model_path):
-        os.mkdir(args.save_model_path)
+        os.makedirs(args.save_model_path)
     # load data 
     # For graph neural network, we need define edge index of different node. 
     # Here, for ridgecrest region, we connect each station with others.

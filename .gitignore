@@ -16,7 +16,8 @@ loss_path
 #data
 data/1h/
 data/HN1h/
-data/hn5day/*.sac
+data/1h_data/*.sac
+data/hn5day/
 model/*.pt
 ridgecrest_workflow.ipynb
 

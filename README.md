@@ -61,9 +61,9 @@
 ##### PS:Some lib is needed (Torch,PyG,Numpy,Pandas,Geodesic.)
 
 ##### 2. Download Weights ([Google Drive](https://drive.google.com/file/d/1OX1IE6Oh5AsOSXjdlAShVzWK0u3bGV9G/view)) file and put it 'model' dir.
-##### 3. Download sac file and put it 'data/hn5day/' dir. You can download it through [STP](https://scedc.caltech.edu/data/waveform.html) or [Google Drive](https://drive.google.com/file/d/1EOZiOYFvmHW3SkyLwI5ia9r4LunU7DNx/view).
+##### 3. Download sac file and put it 'data/1h_data/' dir. You can download it through [STP](https://scedc.caltech.edu/data/waveform.html) or [Google Drive](https://drive.google.com/file/d/1_VmMz0gapc6oEYOIKoBZJWg0ulMgR-2a/view).
 ##### 4. Open Tutorial_PLAN.ipynb in Notebook dir.
-
+https://drive.google.com/file/d/1_VmMz0gapc6oEYOIKoBZJWg0ulMgR-2a/view?usp=sharing
 &ensp;
 # Citation
 If the code and paper help your research, please kindly cite:

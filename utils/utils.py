@@ -56,9 +56,9 @@ def load_continous_data(station_file_path,data_file,data_length = 3600):
     data = np.zeros([len(station_name),3,data_length*100+1])
     # the sort of channel in data is ZEN , little different with other phase picking method
     for index,name in tqdm(enumerate(station_name)):
-        dataname1 = data_file + str(name) + '.HNZ.sac'
-        dataname2 = data_file + str(name) + '.HNE.sac'
-        dataname3 = data_file + str(name) + '.HNN.sac'
+        dataname1 = data_file + str(name) + '.HHZ.sac'
+        dataname2 = data_file + str(name) + '.HHE.sac'
+        dataname3 = data_file + str(name) + '.HHN.sac'
 
         tempdata1 = read(dataname1)
         tr1 = tempdata1[0][0:data_length*100+1]
