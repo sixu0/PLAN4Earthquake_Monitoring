@@ -53,12 +53,14 @@
 
 # How to Use
 
-##### 1. Via Anaconda or pip (recommended):
-    conda env create -f env.yaml
+##### 1. Via Anaconda and pip (recommended):
+    conda create -n PLAN python==3.11.0
+    pip install -r requirements.txt
     conda activate PLAN
     
+##### PS1: If there are some problem, you can use pip tsinghua channels. 
     
-##### PS:Some lib is needed (Torch,PyG,Numpy,Pandas,Geodesic.)
+##### PS2: If there some problem about net, you can also install lib one by one by pip. Some lib is needed (Torch,PyG,Numpy,Pandas,Geopy,tqdm,tensorboard.)
 
 ##### 2. Download Weights ([Google Drive](https://drive.google.com/file/d/1OX1IE6Oh5AsOSXjdlAShVzWK0u3bGV9G/view)) file and put it 'model' dir.
 ##### 3. Download sac file and put it 'data/1h_data/' dir. You can download it through [STP](https://scedc.caltech.edu/data/waveform.html) or [Google Drive](https://drive.google.com/file/d/1_VmMz0gapc6oEYOIKoBZJWg0ulMgR-2a/view).

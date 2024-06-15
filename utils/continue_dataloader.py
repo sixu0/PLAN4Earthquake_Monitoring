@@ -86,7 +86,7 @@ class GNNDataset_ridge(gdata.Dataset):
         station_pandas = pd.read_csv(self.stationfilepath, sep='|')
         station_pandas = station_pandas.drop([0])
         station_pandas.columns = ['Network', 'Station', 'Latitude','Longitude', 'Elevation', 'Sitename','StartTime', 'EndTime']
-        station_pandas['dis'] = 0
+        station_pandas['dis'] = 0.0
 
         station_loc = np.array(station_pandas.iloc[:,2:5])
         Latitude_MAX = station_loc[:,0].max()
