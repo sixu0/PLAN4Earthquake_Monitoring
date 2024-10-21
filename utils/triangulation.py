@@ -2,7 +2,7 @@
 # @Author  : Xu Si and Jun Zhu
 # @Affiliation  : University of Science and Technolog of China
 # @Email   : xusi@mail.ustc.edu.cn
-# @Time    : 31/1/24
+# @Time    : 20/10/24
 ###############################################
 import numpy as np
 import math
@@ -32,7 +32,7 @@ def simulate(staloc,sourceloc,pertubation=1e-2):
 
 def trans_xy(loc):
     x,y,z = np.zeros(len(loc)),np.zeros(len(loc)),np.zeros(len(loc))
-    R = 6371009  # 地球半径，单位为米
+    R = 6371009  
     for i in range(len(loc)):
         x[i] = R * math.cos(loc[i,0]*(math.pi / 180)) * math.cos((math.pi / 180) * loc[i,1])
         y[i] = R * math.cos(loc[i,0]*(math.pi / 180)) * math.sin((math.pi / 180) * loc[i,1])
@@ -40,11 +40,19 @@ def trans_xy(loc):
     return x,y,z
 
 class Triangulate(nn.Module):
-    def __init__(self,staloc,dists,dtype=torch.float32):
+    def __init__(self,staloc,dists,dtype=torch.float32, initial_evloc=None):
         super().__init__()
         self.register_buffer('staloc', torch.tensor(staloc, dtype=dtype))
         self.register_buffer('dists', torch.tensor(dists, dtype=dtype))
         self.evloc = nn.Embedding(1,2)
+                
+        # Set a initial weight to make optimizer more fast and accurate
+        if initial_evloc is not None:
+            with torch.no_grad():
+                # 使用 torch.tensor() 
+                initial_evloc_tensor = torch.tensor(initial_evloc, dtype=dtype).view(1, 2)
+                self.evloc.weight = nn.Parameter(initial_evloc_tensor)
+        
     # def cal_dist(self,staloc,evloc,eps=1e-10):
     #     diff = staloc-evloc
     #     return torch.sqrt(torch.sum(diff**2,axis=-1)+eps)
